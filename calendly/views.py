@@ -1,6 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from django.template import loader
 from .models import Event, User
 
 
@@ -14,7 +12,7 @@ def index(request):
 
 def user_details(request, name):
     user = get_object_or_404(User, username=name)
-    events = Event.objects.filter(user_created__username=name)
+    events = user.event_set.all()
     context = {
         "user": user,
         "events": events,

@@ -45,9 +45,7 @@ class Migration(migrations.Migration):
                 ("hidden", models.BooleanField()),
                 (
                     "user_created",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="calendly.user"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="calendly.user"),
                 ),
             ],
         ),

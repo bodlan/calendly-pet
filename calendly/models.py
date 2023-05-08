@@ -41,7 +41,7 @@ class Event(models.Model):
         return hash_obj.hexdigest()
 
     def get_absolute_url(self):
-        return reverse("event_detail", args=[self.get_hashed_url()])
+        return reverse("calendly:event_detail", args=[self.get_hashed_url()])
 
     def save(self, *args, **kwargs):
         if not self.pk:

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = "calendly"
 urlpatterns = [
     path("", views.index, name="index"),
     path("user/<str:name>", views.user_details, name="user_detail"),
