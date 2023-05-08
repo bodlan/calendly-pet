@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("calendly", "0006_alter_event_expired_alter_event_url"),
     ]

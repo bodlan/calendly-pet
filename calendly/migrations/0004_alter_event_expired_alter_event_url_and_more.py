@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("calendly", "0003_event_url_user_password"),
     ]
@@ -16,9 +15,13 @@ class Migration(migrations.Migration):
             field=models.BooleanField(editable=False),
         ),
         migrations.AlterField(
-            model_name="event", name="url", field=models.URLField(editable=False),
+            model_name="event",
+            name="url",
+            field=models.URLField(editable=False),
         ),
         migrations.AlterField(
-            model_name="user", name="password", field=models.CharField(max_length=255),
+            model_name="user",
+            name="password",
+            field=models.CharField(max_length=255),
         ),
     ]

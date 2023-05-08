@@ -4,14 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("calendly", "0002_alter_user_username"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name="event", name="url", field=models.URLField(default="default"),
+            model_name="event",
+            name="url",
+            field=models.URLField(default="default"),
         ),
         migrations.AddField(
             model_name="user",

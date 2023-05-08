@@ -20,5 +20,4 @@ from django.urls import path, include
 urlpatterns = [
     path("", include("calendly.urls")),
     path("admin/", admin.site.urls),
-
 ]

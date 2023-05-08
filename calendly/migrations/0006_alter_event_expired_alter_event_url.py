@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("calendly", "0005_alter_event_expired"),
     ]
@@ -15,5 +14,9 @@ class Migration(migrations.Migration):
             name="expired",
             field=models.BooleanField(default=False),
         ),
-        migrations.AlterField(model_name="event", name="url", field=models.URLField(),),
+        migrations.AlterField(
+            model_name="event",
+            name="url",
+            field=models.URLField(),
+        ),
     ]
