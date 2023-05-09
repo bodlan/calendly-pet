@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create event</title>
+</head>
+<body>
+<form action="{% url 'calendly:event_add' %}" method="post">
+    {% csrf_token %}
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <label for="ename">Event name</label><br>
+    <input type="text" id="ename" name="ename" required><br>
+    <label for="sdate">Start date</label><br>
+    <input type="datetime-local" id="sdate" name="sdate" required><br>
+    <label for="edate">End date</label><br>
+    <input type="datetime-local" id="edate" name="edate" required><br>
+    <label for="hidden" title="Whether this event is private">Hidden</label><br>
+    <input type="checkbox" id="hidden" name="hidden"><br>
+
+    <input type="submit" value="Create Event">
+</form>
+</body>
+</html>

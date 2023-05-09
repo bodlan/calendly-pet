@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import logging
+import pytz
+from django.utils import timezone
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -122,3 +124,28 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# TODO: change formatters
+# Logging
+LOGGING_LEVEL = logging.DEBUG
+LOGGING_FORMAT = "%(asctime)s %(levelname)s %(message)s"
+LOGGING_DATE_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
+logging.Formatter.converter = lambda *args: timezone.localtime(timezone.now(), pytz.timezone(TIME_ZONE)).timetuple()
+
+LOGGING = {
+    "version": 1,  # the dictConfig format version
+    "disable_existing_loggers": False,  # retain the default loggers
+    "formatters": {
+        "custom": {
+            "format": LOGGING_FORMAT,
+            "datefmt": TIME_ZONE,
+        }
+    },
+    "handlers": {"file": {"class": "logging.FileHandler", "filename": "general.log", "level": LOGGING_LEVEL}},
+    "loggers": {
+        "": {
+            "level": LOGGING_LEVEL,
+            "handlers": ["file"],
+        }
+    },
+}

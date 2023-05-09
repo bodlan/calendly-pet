@@ -6,4 +6,6 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("user/<str:name>", views.user_details, name="user_detail"),
     path("event/<str:hashed_url>/", views.event_detail_view, name="event_detail"),
+    path("event/new", views.create_event, name="create_event"),
+    path("event/add", views.new_event, name="event_add"),
 ]

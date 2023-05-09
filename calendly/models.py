@@ -30,7 +30,7 @@ class Event(models.Model):
     end_time = models.DateTimeField("End time")
     expired = models.BooleanField(default=False, editable=False)
     hidden = models.BooleanField()
-    url = models.URLField(blank=True, null=True, editable=False)
+    url = models.URLField(blank=True, null=True, editable=False, unique=True)
 
     def __str__(self):
         return f"{self.name} {self.user_created}"
