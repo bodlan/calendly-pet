@@ -1,16 +1,28 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.views import generic
 from .models import Event, User
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
-def index(request):
-    events = Event.objects.order_by("name").filter(hidden=False, expired=False)
-    context = {"events": events}
-    return render(request, "calendly/index.html", context)
+class IndexView(generic.ListView):
+    template_name = "calendly/index.html"
+    context_object_name = "events"
+
+    def get_queryset(self):
+        return Event.objects.order_by("name").filter(hidden=False, expired=False)
+
+
+class EventDetailsView(generic.DetailView):
+    model = Event
+    template_name = "calendly/event_detail.html"
+
+
+class UserDetailsView(generic.DetailView):
+    model = User
+    template_name = "calendly/user_details.html"
 
 
 def create_event(request):
