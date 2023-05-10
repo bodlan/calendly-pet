@@ -9,7 +9,7 @@
   <h2>Upcoming events:</h2>
         <ul>
         {% for event in events %}
-            <li><a href=".{{ event.url }}">{{ event.name }}</a></li>
+            <li><a href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
