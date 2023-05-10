@@ -15,14 +15,44 @@ class IndexView(generic.ListView):
         return Event.objects.order_by("name").filter(hidden=False, expired=False)
 
 
+# TODO: change logic from pk to url
 class EventDetailsView(generic.DetailView):
     model = Event
     template_name = "calendly/event_detail.html"
+    context_object_name = "event"
+
+    def get_object(self, queryset=None):
+        url = self.kwargs["hash_url"]
+        try:
+            e_obj = Event.objects.get(hash_url=url)
+        except Event.DoesNotExist:
+            logger.info("Event does not exist with url: %s", url)
+            e_obj = None
+        except Exception as e:
+            logger.warning(e)
+            raise Exception
+        return e_obj
 
 
 class UserDetailsView(generic.DetailView):
     model = User
     template_name = "calendly/user_details.html"
+    context_object_name = "user"
+
+    def get_object(self, queryset=None):
+        name = self.kwargs["name"]
+        try:
+            u_obj = User.objects.get(username=name)
+        except Exception as e:
+            logger.warning(e)
+            u_obj = None
+        return u_obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["events"] = Event.objects.filter(user_created=context["user"])
+        logger.info(context)
+        return context
 
 
 def create_event(request):
