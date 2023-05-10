@@ -1,5 +1,6 @@
 import hashlib
 
+import pytz
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
 
@@ -9,6 +10,7 @@ class User(models.Model):
     username = models.CharField(max_length=20, unique=True, blank=False)
     password = models.CharField(max_length=255, blank=False)
     join_date = models.DateField(auto_now_add=True)
+    timezone = models.CharField(max_length=50, default="UTC")
 
     def __str__(self):
         return f"{self.username} {self.join_date}"
@@ -35,11 +37,24 @@ class Event(models.Model):
         return f"{self.name} {self.user_created}"
 
     def get_hashed_url(self):
-        identifier = self.name + str(self.start_time) + str(self.end_time)
+        identifier = self.name + str(self.user_created)
         hash_obj = hashlib.md5(identifier.encode())
         return hash_obj.hexdigest()
+
+    def time_in_user_timezone(self, time):
+        """
+        Returns the time of the event in the user's timezone.
+        """
+        timezone_obj = pytz.timezone(self.user_created.timezone)
+        # TODO: change this workaround of timezones in future
+        try:
+            return timezone_obj.localize(time)
+        except ValueError:
+            return time
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.hash_url = self.get_hashed_url()
+            self.start_time = self.time_in_user_timezone(self.start_time)
+            self.end_time = self.time_in_user_timezone(self.end_time)
         super().save(*args, **kwargs)
