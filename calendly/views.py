@@ -15,7 +15,6 @@ class IndexView(generic.ListView):
         return Event.objects.order_by("name").filter(hidden=False, expired=False)
 
 
-# TODO: change logic from pk to url
 class EventDetailsView(generic.DetailView):
     model = Event
     template_name = "calendly/event_detail.html"
