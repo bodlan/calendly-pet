@@ -16,8 +16,14 @@ class User(models.Model):
         return f"{self.username} {self.join_date}"
 
     def save(self, *args, **kwargs):
-        if not self.pk or self.password != User.objects.get(pk=self.pk).password:
+        if self.pk:
+            user = User.objects.get(pk=self.pk)
+        if not self.pk or self.password != user.password:
             self.password = make_password(self.password)
+        elif self.timezone != user.timezone:
+            user_events = user.event_set.all()
+            for user_event in user_events:
+                user_event.save()
         super().save(*args, **kwargs)
 
     def check_password(self, raw_password):
@@ -53,8 +59,10 @@ class Event(models.Model):
             return time
 
     def save(self, *args, **kwargs):
+        # TODO: change start_time and end_time handle with timezone change in User model
         if not self.pk:
             self.hash_url = self.get_hashed_url()
             self.start_time = self.time_in_user_timezone(self.start_time)
             self.end_time = self.time_in_user_timezone(self.end_time)
+
         super().save(*args, **kwargs)
