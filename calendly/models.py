@@ -59,10 +59,6 @@ class Event(models.Model):
             return time
 
     def save(self, *args, **kwargs):
-        # TODO: change start_time and end_time handle with timezone change in User model
         if not self.pk:
             self.hash_url = self.get_hashed_url()
-            self.start_time = self.time_in_user_timezone(self.start_time)
-            self.end_time = self.time_in_user_timezone(self.end_time)
-
         super().save(*args, **kwargs)
