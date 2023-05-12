@@ -3,6 +3,9 @@
   <head>
     <title>Calendly Pet</title>
       <BASE href="{% url 'calendly:index' %}">
+      {% load static %}
+      <link rel = 'stylesheet' href="{% static 'calendly/style.css' %}">
+
   </head>
   <body>
   {% if events %}

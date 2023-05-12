@@ -12,7 +12,7 @@ class IndexView(generic.ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.order_by("name").filter(hidden=False, expired=False)
+        return Event.objects.filter(hidden=False, expired=False).order_by("name")
 
 
 class EventDetailsView(generic.DetailView):
