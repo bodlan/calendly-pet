@@ -31,13 +31,13 @@ class User(models.Model):
 
 
 class Event(models.Model):
-    user_created = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_created = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
     name = models.CharField(max_length=50, blank=False)
-    start_time = models.DateTimeField("Start time")
-    end_time = models.DateTimeField("End time")
-    expired = models.BooleanField(default=False, editable=False)
-    hidden = models.BooleanField()
-    hash_url = models.URLField(blank=True, null=True, editable=False, unique=True)
+    start_time = models.DateTimeField("Start time", blank=False)
+    end_time = models.DateTimeField("End time", blank=False)
+    expired = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
+    hash_url = models.URLField(default=None, editable=False, unique=True)
 
     def __str__(self):
         return f"{self.name} {self.user_created}"
