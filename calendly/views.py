@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views import generic
 from .models import Event, User
 import logging
@@ -89,7 +90,7 @@ def new_event(request):
             },
         )
     logger.info("Event created")
-    return HttpResponseRedirect(e.get_absolute_url())
+    return HttpResponseRedirect(reverse("calendly:event_detail", args=(e.hash_url,)))
 
 
 def user_details(request, name):
