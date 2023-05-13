@@ -1,3 +1,2 @@
 Django==4.2.1
-pre-commit==3.3.1
-black==23.3.0
+pytz==2023.3
