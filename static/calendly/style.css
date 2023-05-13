@@ -1,6 +1,63 @@
-li a {
-    color: green;
+h1 {
+    font-family: Andika;
+    font-size: 23px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    line-height: 23px;
+}
+h3 {
+    font-family: Andika;
+    font-size: 17px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 700;
+    line-height: 23px;
+}
+p, a {
+    font-family: Andika;
+    font-size: 14px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 23px;
+}
+blockquote {
+    font-family: Andika;
+    font-size: 17px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 23px;
+}
+pre {
+    font-family: Andika;
+    font-size: 11px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 23px;
 }
 body {
-    background: white url("images/background.jpg") no-repeat;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+.blue {
+    background: #add8e6;
+}
+.red{
+    background: #dd3f31;
+}
+.pink {
+    background #ff0066;
+}
+.dark {
+    background: #0f0f10;
+}
+a {
+   text-decoration: none;
+}
+ul{
+    list-style-type: none;
 }
