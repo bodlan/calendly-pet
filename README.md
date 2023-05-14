@@ -20,4 +20,4 @@ Installing requirements
 
 Run django server
 
-```python manag.py runserver```
+```python manage.py runserver```
