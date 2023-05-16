@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "calendly.apps.CalendlyConfig",
     "debug_toolbar",
+    "crispy_forms",
+    "crispy_bootstrap4",
 ]
-
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
