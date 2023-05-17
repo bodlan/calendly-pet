@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
 from django.views import generic
 from .models import Event, User
-from .forms import NewUserForm
+from .forms import NewUserForm, EventCreationForm
 import logging
 
 logger = logging.getLogger(__name__)
@@ -98,11 +98,17 @@ def logout_request(request):
 
 
 def create_event(request):
-    current_user = User.objects.get(username="bodlan")
-    context = {
-        "user": current_user,
-    }
-    return render(request, "calendly/create_event.html", context=context)
+    if request.method == "POST":
+        event_form = EventCreationForm(request.POST)
+        if event_form.is_valid():
+            event_form.save()
+            messages.success(request, "Event added successfully!")
+            return redirect("calendly:event_detail", args=())
+        else:
+            messages.error(request, "Error while saving form!")
+            return redirect("calendly:create_event")
+    event_form = EventCreationForm()
+    return render(request=request, template_name="calendly/create_event.html", context={"event_form": event_form})
 
 
 def new_event(request):

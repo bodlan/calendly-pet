@@ -4,9 +4,15 @@ from django.contrib.auth.models import User
 from .models import Event
 
 
-class EventForm(forms.ModelForm):
-    model = Event
-    fields = [""]
+class EventCreationForm(forms.ModelForm):
+    name = forms.CharField(max_length=150, required=True)
+    start_time = forms.DateTimeField(required=True)
+    end_time = forms.DateTimeField(required=True)
+
+    # TODO: rewrite datetime field to satisfy needs of calendly app
+    class Meta:
+        model = Event
+        fields = ("name", "start_time", "end_time", "hidden")
 
 
 class NewUserForm(UserCreationForm):

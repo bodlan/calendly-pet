@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>{{ event.name }}</title>
-  </head>
-  <body>
+{% extends "calendly/base.html" %}
+{% block title %}{{event.name}}{% endblock%}
+{% block content %}
   <h2> {{ event.name }}</h2>
   <p><a href="{% url 'calendly:user_detail' event.user_created.username %}">{{ event.user_created.username }}</a></p>
   <p>Start time: {{ event.start_time }}</p>
   <p>End time: {{ event.end_time }}</p>
-  <p><a href="{{ event.url }}">Share</a></p>
+  <!--Share button to copy link into clipboard-->
+  <button><a href="{% url 'calendly:event_detail' event.hash_url %}">Share</a></button>
 
-  </body>
-</html>
+{% endblock %}
