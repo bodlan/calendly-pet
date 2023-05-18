@@ -1,9 +1,15 @@
 {% extends "calendly/base.html" %}
+{% block extra_head %}
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ event_form.media }}
+{% endblock %}
 {% block content %}
-{% load crispy_forms_tags %}
-<form method="post">
-    {% csrf_token %}
-    {{event_form | crispy }}
-    <button class="btn btn-primary my-4" type="submit">Create Event</button>
-</form>
+    {% load crispy_forms_tags %}
+    <form method="post">
+        {% csrf_token %}
+        {{ event_form | crispy }}
+        <button class="btn btn-primary my-4" type="submit">Create Event</button>
+    </form>
 {% endblock %}

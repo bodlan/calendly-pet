@@ -2,7 +2,8 @@ from django.urls import reverse
 from django.test import TestCase
 from django.contrib.auth.hashers import check_password
 from datetime import datetime, timedelta
-from .models import User, Event
+from django.contrib.auth.models import User
+from .models import Event
 
 
 class UserModelTest(TestCase):
