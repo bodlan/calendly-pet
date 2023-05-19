@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "crispy_forms",
     "crispy_bootstrap4",
+    "bootstrap4",
+    "bootstrap_datepicker_plus",
 ]
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 MIDDLEWARE = [
