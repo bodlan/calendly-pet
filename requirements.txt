@@ -1,8 +1,9 @@
 Django==4.2.1
 pytz==2023.3
 django-crispy-forms==2.0
-crispy-bootstrap4==2022.1
+crispy-bootstrap5==0.7
 django-debug-toolbar==4.0.0
 django-bootstrap-datepicker-plus==5.0.3
-django-bootstrap4==23.1
+django-bootstrap-v5==1.0.11
+
 

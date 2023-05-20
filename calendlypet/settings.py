@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-7-x!f4s7@pw0b57%c(z0g7*m%y93w6=ga8_+kg=!qs0i!lkt82
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
 
 
 # Application definition
@@ -42,11 +42,12 @@ INSTALLED_APPS = [
     "calendly.apps.CalendlyConfig",
     "debug_toolbar",
     "crispy_forms",
-    "crispy_bootstrap4",
-    "bootstrap4",
+    "bootstrap5",
+    "crispy_bootstrap5",
     "bootstrap_datepicker_plus",
 ]
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
