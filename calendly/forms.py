@@ -8,15 +8,29 @@ from .models import Event
 
 
 class EventCreationForm(forms.ModelForm):
+    name = forms.CharField(max_length=150, required=True)
+
     class Meta:
         model = Event
         fields = ["name", "start_time", "end_time", "hidden"]
         widgets = {
-            "start_time": DateTimePickerInput(),
-            "end_time": DateTimePickerInput(range_from="start_time"),
+            "start_time": DateTimePickerInput(
+                options={
+                    "showTodayButton": True,
+                }
+            ),
+            "end_time": DateTimePickerInput(
+                options={
+                    "showTodayButton": True,
+                },
+                range_from="start_time",
+            ),
         }
+        help_texts = {"hidden": "Should the event be hidden from average user?"}
 
-    name = forms.CharField(max_length=150, required=True)
+    def __init__(self, *args, **kwargs):
+        self._user_created = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -30,6 +44,13 @@ class EventCreationForm(forms.ModelForm):
             raise forms.ValidationError("Start time cannot be in the past.")
 
         return cleaned_data
+
+    def save(self, commit=True):
+        event = super().save(commit=False)
+        event.user_created = self._user_created
+        if commit:
+            event.save()
+        return event
 
 
 class NewUserForm(UserCreationForm):

@@ -1,23 +1,13 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Calendly Pet</title>
-      <BASE href="{% url 'calendly:index' %}">
-      {% load static %}
-      <link rel = 'stylesheet' href="{% static 'calendly/style.css' %}">
-      <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Andika" />
-
-  </head>
-  <body>
+{% extends "calendly/base.html" %}
+{% block content %}
   {% if events %}
   <h1>Upcoming events:</h1>
         <ul>
         {% for event in events %}
-            <li><a class="blue" href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
+            <li><a href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
         <p>No events are available.</p>
     {% endif %}
-  </body>
-</html>
+{% endblock %}

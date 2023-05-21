@@ -1,10 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.urls import reverse
 from django.views import generic
 from .models import Event
 
@@ -19,7 +17,7 @@ class IndexView(generic.ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.filter(hidden=False, expired=False).order_by("name")
+        return Event.objects.filter(hidden=False, expired=False).order_by("-id")[:5]
 
 
 class EventDetailsView(generic.DetailView):
@@ -99,61 +97,24 @@ def logout_request(request):
     return redirect("calendly:index")
 
 
+def explore(request):
+    return render(request=request, template_name="calendly/explore.html")
+
+
+# TODO: rewrite to generic editing view
 def create_event(request):
+    if not request.user.is_authenticated:
+        return redirect("calendly:register")
     if request.method == "POST":
-        event_form = EventCreationForm(request.POST)
+        event_form = EventCreationForm(request.POST, user=request.user)
         if event_form.is_valid():
             event_form.save()
-            messages.success(request, "Event added successfully!")
-            return redirect("calendly:event_detail", args=())
+            messages.success(request, "Event created successfully!")
+            # Getting the latest event created by this user
+            event = request.user.event_set.order_by("-id")[0]
+            return redirect(event)
         else:
-            messages.error(request, "Error while saving form!")
+            messages.error(request, "Error validating form!")
             return redirect("calendly:create_event")
-    event_form = EventCreationForm()
+    event_form = EventCreationForm(user=request.user)
     return render(request=request, template_name="calendly/create_event.html", context={"event_form": event_form})
-
-
-def new_event(request):
-    current_user = User.objects.get(username="bodlan")
-    data = request.POST
-    if "hidden" in data:
-        hidden = True
-    else:
-        hidden = False
-    try:
-        e = Event(
-            user_created=current_user,
-            name=data["ename"],
-            start_time=data["sdate"],
-            end_time=data["edate"],
-            hidden=hidden,
-        )
-        e.save()
-    except Exception as e:
-        logger.error("Couldn't create event: %s", e)
-        return render(
-            request,
-            "calendly/create_event.html",
-            context={
-                "user": current_user,
-                "error_message": "Something went wrong try again!",
-            },
-        )
-    logger.info("Event created")
-    return HttpResponseRedirect(reverse("calendly:event_detail", args=(e.hash_url,)))
-
-
-def user_details(request, name):
-    user = get_object_or_404(User, username=name)
-    events = user.event_set.all()
-    context = {
-        "user": user,
-        "events": events,
-    }
-    return render(request, "calendly/user_details.html", context=context)
-
-
-def event_detail_view(request, hashed_url):
-    path = request.path
-    event = get_object_or_404(Event, url=path)
-    return render(request, "calendly/event_detail.html", context={"event": event})

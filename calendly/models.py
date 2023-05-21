@@ -21,6 +21,11 @@ class Event(models.Model):
         hash_obj = hashlib.md5(identifier.encode())
         return hash_obj.hexdigest()
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse("calendly:event_detail", args=(self.hash_url,))
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.hash_url = self.get_hashed_url()
