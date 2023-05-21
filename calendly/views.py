@@ -17,7 +17,7 @@ class IndexView(generic.ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.filter(hidden=False, expired=False).order_by("name")
+        return Event.objects.filter(hidden=False, expired=False).order_by("-id")[:5]
 
 
 class EventDetailsView(generic.DetailView):
@@ -95,6 +95,10 @@ def logout_request(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("calendly:index")
+
+
+def explore(request):
+    return render(request=request, template_name="calendly/explore.html")
 
 
 # TODO: rewrite to generic editing view

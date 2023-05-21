@@ -26,6 +26,7 @@ class EventCreationForm(forms.ModelForm):
                 range_from="start_time",
             ),
         }
+        help_texts = {"hidden": "Should the event be hidden from average user?"}
 
     def __init__(self, *args, **kwargs):
         self._user_created = kwargs.pop("user")

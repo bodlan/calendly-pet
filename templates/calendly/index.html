@@ -4,7 +4,7 @@
   <h1>Upcoming events:</h1>
         <ul>
         {% for event in events %}
-            <li><a class="blue" href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
+            <li><a href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
