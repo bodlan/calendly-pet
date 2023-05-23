@@ -1,5 +1,30 @@
 {% extends "calendly/base.html" %}
 {% block title %}Explore{% endblock%}
 {% block content %}
-
+<div class="row">
+    <div class="col-md-3 col-lg-3">
+         <div class="widget-small primary coloured-icon">
+             <div class="info">
+                <h4>Events in database</h4>
+                <p><b>{{ events_count }}</b></p>
+             </div>
+         </div>
+    </div>
+    <div class="col-md-3 col-lg-3">
+        <div class="widget-small warning coloured-icon">
+            <div class="info">
+                <h4>Users in database</h4>
+                <p><b>{{ users_count }}</b></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-lg-3">
+        <div class="widget-small warning coloured-icon">
+            <div class="info">
+                <h4>Active events</h4>
+                <p><b>{{ active_events }}</b></p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
