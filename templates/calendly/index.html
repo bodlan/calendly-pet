@@ -1,13 +1,33 @@
 {% extends "calendly/base.html" %}
 {% block content %}
-  {% if events %}
-  <h1>Upcoming events:</h1>
-        <ul>
-        {% for event in events %}
-            <li><a href="{% url 'calendly:event_detail' event.hash_url %}">{{ event.name }}</a></li>
-        {% endfor %}
-        </ul>
+
+<div class="d-flex justify-content-center my-3">
+    <h1>Upcoming Events</h1>
+</div>
+<div class="d-flex justify-content-center">
+    {% if events %}
+    <table class="table table-hover table-borderless">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Host</th>
+            <th scope="col">Start at</th>
+            <th scope="col">Link</th>
+        </tr>
+        </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.user_created }}</td>
+                    <td>{{ event.start_time }}</td>
+                    <td><a class="btn btn-outline-primary" href="{% url 'calendly:event_detail' event.hash_url %}" role="button">Link</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
     {% else %}
         <p>No events are available.</p>
     {% endif %}
+</div>
 {% endblock %}

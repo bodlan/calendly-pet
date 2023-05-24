@@ -1,13 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
+from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
+from django.utils import timezone
 from django.views import generic
 from .models import Event
-
 from .forms import NewUserForm, EventCreationForm
 import logging
+
+from .utils import generate_calendar
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,29 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return Event.objects.filter(hidden=False, expired=False).order_by("-id")[:5]
+
+
+class CalendarEventsView(generic.View):
+    login_url = "calendly:login"
+    template_name = "calendly/explore.html"
+
+    def get(self, request, *args, **kwargs):
+        now = timezone.now()
+        year = now.year
+        month = now.month
+        calendar_data = generate_calendar(year, month)
+        events = Event.objects.filter(hidden=False, expired=False)
+        user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
+        current_time = timezone.now()
+        active_events = Event.objects.filter(start_time__lte=current_time, end_time__gt=current_time, expired=False)
+        context = {
+            "events": events,
+            "users_count": user_count,
+            "events_count": events.count(),
+            "active_events": active_events.count(),
+            "calendar_data": calendar_data,
+        }
+        return render(request, self.template_name, context=context)
 
 
 class EventDetailsView(generic.DetailView):
@@ -95,10 +121,6 @@ def logout_request(request):
     logout(request)
     messages.info(request, "You have successfully logged out.")
     return redirect("calendly:index")
-
-
-def explore(request):
-    return render(request=request, template_name="calendly/explore.html")
 
 
 # TODO: rewrite to generic editing view
