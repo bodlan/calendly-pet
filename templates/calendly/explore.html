@@ -21,4 +21,28 @@
             </div>
     </div>
 </div>
+<div class="my-3">
+<table class="table table-bordered ">
+        <thead>
+            <tr>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in calendar_data %}
+                <tr>
+                    {% for day in week %}
+                        <td>{{ day }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

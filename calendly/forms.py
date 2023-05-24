@@ -8,7 +8,7 @@ from .models import Event
 
 
 class EventCreationForm(forms.ModelForm):
-    name = forms.CharField(max_length=150, required=True)
+    name = forms.CharField(label="Event title", max_length=150, required=True)
 
     class Meta:
         model = Event
@@ -17,6 +17,7 @@ class EventCreationForm(forms.ModelForm):
             "start_time": DateTimePickerInput(
                 options={
                     "showTodayButton": True,
+                    "minDate": timezone.now().date(),
                 }
             ),
             "end_time": DateTimePickerInput(
@@ -26,7 +27,7 @@ class EventCreationForm(forms.ModelForm):
                 range_from="start_time",
             ),
         }
-        help_texts = {"hidden": "Should the event be hidden from average user?"}
+        help_texts = {"hidden": "Should the event be hidden from users without link?"}
 
     def __init__(self, *args, **kwargs):
         self._user_created = kwargs.pop("user")
