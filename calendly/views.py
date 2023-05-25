@@ -28,6 +28,11 @@ class CalendarEventsView(generic.View):
     template_name = "calendly/explore.html"
 
     def get(self, request, *args, **kwargs):
+        if "range" in kwargs:
+            calendar_range = kwargs["range"].title()
+        else:
+            calendar_range = "month".title()
+
         now = timezone.now()
         year = now.year
         month = now.month
@@ -35,15 +40,41 @@ class CalendarEventsView(generic.View):
         events = Event.objects.filter(hidden=False, expired=False)
         user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
         current_time = timezone.now()
-        active_events = Event.objects.filter(start_time__lte=current_time, end_time__gt=current_time, expired=False)
+        active_events = events.filter(start_time__lte=current_time, end_time__gt=current_time)
         context = {
             "events": events,
             "users_count": user_count,
             "events_count": events.count(),
             "active_events": active_events.count(),
             "calendar_data": calendar_data,
+            "range": calendar_range,
         }
         return render(request, self.template_name, context=context)
+
+
+def day_view(request):
+    events = Event.objects.filter(start_time__date=timezone.now().date())
+    print(events)
+    return render(request, "calendly/day_view.html", {"events": events})
+
+
+def week_view(request):
+
+    events = Event.objects.filter(start_time__date=timezone.now().date())
+    print(events)
+    return render(request, "calendly/week_view.html", {"events": events})
+
+
+def month_view(request):
+    events = Event.objects.filter(start_time__month=timezone.now().month)
+    print(events)
+    return render(request, "calendly/month_view.html", {"events": events})
+
+
+def year_view(request):
+    events = Event.objects.filter(start_time__year=timezone.now().year)
+    print(events)
+    return render(request, "calendly/year_view.html", {"events": events})
 
 
 class EventDetailsView(generic.DetailView):

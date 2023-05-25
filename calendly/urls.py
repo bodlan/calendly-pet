@@ -11,4 +11,8 @@ urlpatterns = [
     path("event/<slug:hash_url>/", views.EventDetailsView.as_view(), name="event_detail"),
     path("event/new", views.create_event, name="create_event"),
     path("explore", views.CalendarEventsView.as_view(), name="explore"),
+    path("explore/day/", views.day_view, name="day_view"),
+    path("explore/week/", views.week_view, name="week_view"),
+    path("explore/month/", views.month_view, name="month_view"),
+    path("explore/year/", views.year_view, name="year_view"),
 ]
