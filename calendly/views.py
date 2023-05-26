@@ -1,13 +1,14 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.utils import timezone
 from django.views import generic
 from .models import Event
-from .forms import NewUserForm, EventCreationForm
+from .forms import NewUserForm, EventCreationForm, EventUpdatingForm
 import logging
 
 from .utils import generate_calendar
@@ -53,15 +54,28 @@ class EventDetailsView(generic.DetailView):
 
     def get_object(self, queryset=None):
         url = self.kwargs["hash_url"]
-        try:
-            e_obj = Event.objects.get(hash_url=url)
-        except Event.DoesNotExist:
-            logger.info("Event does not exist with url: %s", url)
-            e_obj = None
-        except Exception as e:
-            logger.warning(e)
-            raise Exception
+        e_obj = get_object_or_404(Event, hash_url=url)
         return e_obj
+
+
+class UpdateEventView(LoginRequiredMixin, generic.UpdateView):
+    model = Event
+    form_class = EventUpdatingForm
+    template_name = "calendly/update_event_form.html"
+
+    def get_object(self, queryset=None):
+        url = self.kwargs["hash_url"]
+        e_obj = get_object_or_404(Event, hash_url=url)
+        return e_obj
+
+    def dispatch(self, request, *args, **kwargs):
+        event_object = self.get_object()  # Retrieve the object being updated
+
+        # Check if the user is the specific user or an admin
+        if not (request.user == event_object.user_created or request.user.is_staff):
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserDetailsView(generic.DetailView):

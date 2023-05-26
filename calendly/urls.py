@@ -10,5 +10,6 @@ urlpatterns = [
     path("user/<slug:name>", views.UserDetailsView.as_view(), name="user_detail"),
     path("event/<slug:hash_url>/", views.EventDetailsView.as_view(), name="event_detail"),
     path("event/new", views.create_event, name="create_event"),
+    path("event/<slug:hash_url>/update", views.UpdateEventView.as_view(), name="update_event"),
     path("explore", views.CalendarEventsView.as_view(), name="explore"),
 ]

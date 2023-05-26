@@ -6,6 +6,10 @@
   <p>Start time: {{ event.start_time }}</p>
   <p>End time: {{ event.end_time }}</p>
   <!--Share button to copy link into clipboard-->
-  <button><a href="{% url 'calendly:event_detail' event.hash_url %}">Share</a></button>
+<!--  <button class="btn"><a href="{% url 'calendly:event_detail' event.hash_url %}">Share</a></button>-->
+  {% if event.user_created == request.user or request.user.is_staff %}
+    <button class="btn"><a href="{% url 'calendly:update_event' event.hash_url %}">Edit</a></button>
+  {% endif %}
+
 
 {% endblock %}
