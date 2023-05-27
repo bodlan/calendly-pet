@@ -1,6 +1,12 @@
 {% extends "calendly/base.html" %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock%}
 {% block title %}{{event.name}}{% endblock%}
 {% block content %}
+<div class="my-3" align="center">
   <h2> {{ event.name }}</h2>
   <p><a href="{% url 'calendly:user_detail' event.user_created.username %}">{{ event.user_created.username }}</a></p>
   <p>Start time: {{ event.start_time }}</p>
@@ -8,8 +14,32 @@
   <!--Share button to copy link into clipboard-->
 <!--  <button class="btn"><a href="{% url 'calendly:event_detail' event.hash_url %}">Share</a></button>-->
   {% if event.user_created == request.user or request.user.is_staff %}
-    <button class="btn"><a href="{% url 'calendly:update_event' event.hash_url %}">Edit</a></button>
+    <a class="btn btn-primary" href="{% url 'calendly:update_event' event.hash_url %}">Edit</a>
+    <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ event.id }}">Delete</a>
+    <!-- Modal dialog for delete confirmation -->
+    <div class="modal fade" id="confirmDeleteModal{{ event.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel{{ event.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel{{ event.id }}">Delete Event</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the event "{{ event.name }}"?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form method="post" action="{% url 'calendly:delete_event' event.hash_url %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
   {% endif %}
-
+</div>
 
 {% endblock %}

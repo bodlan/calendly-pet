@@ -23,6 +23,19 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return Event.objects.filter(hidden=False, expired=False).order_by("-id")[:5]
 
+    def get(self, request, *args, **kwargs):
+        events = Event.objects.filter(hidden=False, expired=False)
+        user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
+        current_time = timezone.now()
+        active_events = events.filter(start_time__lte=current_time, end_time__gt=current_time)
+        context = {
+            "events": self.get_queryset(),
+            "events_count": events.count(),
+            "active_events": active_events.count(),
+            "users_count": user_count,
+        }
+        return render(request, self.template_name, context=context)
+
 
 class CalendarEventsView(generic.View):
     login_url = "calendly:login"
@@ -39,14 +52,8 @@ class CalendarEventsView(generic.View):
         month = now.month
         calendar_data = generate_calendar(year, month)
         events = Event.objects.filter(hidden=False, expired=False)
-        user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
-        current_time = timezone.now()
-        active_events = events.filter(start_time__lte=current_time, end_time__gt=current_time)
         context = {
             "events": events,
-            "users_count": user_count,
-            "events_count": events.count(),
-            "active_events": active_events.count(),
             "calendar_data": calendar_data,
             "range": calendar_range,
         }
@@ -60,7 +67,6 @@ def day_view(request):
 
 
 def week_view(request):
-
     events = Event.objects.filter(start_time__date=timezone.now().date())
     print(events)
     return render(request, "calendly/week_view.html", {"events": events})
@@ -93,6 +99,26 @@ class UpdateEventView(LoginRequiredMixin, generic.UpdateView):
     model = Event
     form_class = EventUpdatingForm
     template_name = "calendly/update_event_form.html"
+
+    def get_object(self, queryset=None):
+        url = self.kwargs["hash_url"]
+        e_obj = get_object_or_404(Event, hash_url=url)
+        return e_obj
+
+    def dispatch(self, request, *args, **kwargs):
+        event_object = self.get_object()  # Retrieve the object being updated
+
+        # Check if the user is the specific user or an admin
+        if not (request.user == event_object.user_created or request.user.is_staff):
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DeleteEventView(LoginRequiredMixin, generic.DeleteView):
+    model = Event
+    template_name = "calendly/delete_event.html"
+    success_url = "/"
 
     def get_object(self, queryset=None):
         url = self.kwargs["hash_url"]
