@@ -54,6 +54,41 @@ class EventCreationForm(forms.ModelForm):
         return event
 
 
+class EventUpdatingForm(forms.ModelForm):
+    name = forms.CharField(label="Event title", max_length=150, required=True)
+
+    class Meta:
+        model = Event
+        fields = ["name", "start_time", "end_time", "hidden"]
+        widgets = {
+            "start_time": DateTimePickerInput(
+                options={
+                    "showTodayButton": True,
+                }
+            ),
+            "end_time": DateTimePickerInput(
+                options={
+                    "showTodayButton": True,
+                },
+                range_from="start_time",
+            ),
+        }
+        help_texts = {"hidden": "Should the event be hidden from users without link?"}
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+
+        if start_time and end_time and start_time >= end_time:
+            raise forms.ValidationError("End time must be after start time.")
+
+        if start_time and start_time < timezone.now():
+            raise forms.ValidationError("Start time cannot be in the past.")
+
+        return cleaned_data
+
+
 class NewUserForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
