@@ -117,7 +117,6 @@ class UpdateEventView(LoginRequiredMixin, generic.UpdateView):
 
 class DeleteEventView(LoginRequiredMixin, generic.DeleteView):
     model = Event
-    template_name = "calendly/delete_event.html"
     success_url = "/"
 
     def get_object(self, queryset=None):
