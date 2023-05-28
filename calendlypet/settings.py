@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "bootstrap5",
     "crispy_bootstrap5",
     "bootstrap_datepicker_plus",
+    "fontawesomefree",
 ]
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"

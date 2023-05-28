@@ -134,9 +134,9 @@ class DeleteEventView(LoginRequiredMixin, generic.DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class UserDetailsView(generic.DetailView):
+class UserEventsView(generic.DetailView):
     model = User
-    template_name = "calendly/user_details.html"
+    template_name = "calendly/user_events.html"
     context_object_name = "user"
 
     def get_object(self, queryset=None):
@@ -193,7 +193,6 @@ def logout_request(request):
     return redirect("calendly:index")
 
 
-# TODO: rewrite to generic editing view
 def create_event(request):
     if not request.user.is_authenticated:
         return redirect("calendly:register")
