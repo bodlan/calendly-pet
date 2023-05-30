@@ -1,0 +1,11 @@
+{% extends "calendly/base.html" %}
+{% block title %}Delete{% endblock %}
+{% block content %}
+<h1>Delete Event Confirmation</h1>
+    <p>Are you sure you want to delete the event "{{ event.name }}"?</p>
+    <form action="{% url 'delete_event' event.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'calendly:index' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

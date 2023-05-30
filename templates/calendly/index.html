@@ -1,6 +1,25 @@
 {% extends "calendly/base.html" %}
 {% block content %}
-
+<div class="row text-center my-3 container-fluid">
+    <div class="col">
+             <div class="info">
+                <h4>Events in database</h4>
+                <p><b>{{ events_count }}</b></p>
+             </div>
+    </div>
+    <div class="col">
+            <div class="info">
+                <h4>Users in database</h4>
+                <p><b>{{ users_count }}</b></p>
+            </div>
+    </div>
+    <div class="col">
+            <div class="info">
+                <h4>Active events</h4>
+                <p><b>{{ active_events }}</b></p>
+            </div>
+    </div>
+</div>
 <div class="d-flex justify-content-center my-3">
     <h1>Upcoming Events</h1>
 </div>

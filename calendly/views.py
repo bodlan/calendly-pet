@@ -1,13 +1,14 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.utils import timezone
 from django.views import generic
 from .models import Event
-from .forms import NewUserForm, EventCreationForm
+from .forms import NewUserForm, EventCreationForm, EventUpdatingForm
 import logging
 
 from .utils import generate_calendar
@@ -22,28 +23,65 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return Event.objects.filter(hidden=False, expired=False).order_by("-id")[:5]
 
+    def get(self, request, *args, **kwargs):
+        events = Event.objects.filter(hidden=False, expired=False)
+        user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
+        current_time = timezone.now()
+        active_events = events.filter(start_time__lte=current_time, end_time__gt=current_time)
+        context = {
+            "events": self.get_queryset(),
+            "events_count": events.count(),
+            "active_events": active_events.count(),
+            "users_count": user_count,
+        }
+        return render(request, self.template_name, context=context)
+
 
 class CalendarEventsView(generic.View):
     login_url = "calendly:login"
     template_name = "calendly/explore.html"
 
     def get(self, request, *args, **kwargs):
+        if "range" in kwargs:
+            calendar_range = kwargs["range"].title()
+        else:
+            calendar_range = "month".title()
+
         now = timezone.now()
         year = now.year
         month = now.month
         calendar_data = generate_calendar(year, month)
         events = Event.objects.filter(hidden=False, expired=False)
-        user_count = User.objects.annotate(event_count=Count("event")).filter(event_count__gt=0).count()
-        current_time = timezone.now()
-        active_events = Event.objects.filter(start_time__lte=current_time, end_time__gt=current_time, expired=False)
         context = {
             "events": events,
-            "users_count": user_count,
-            "events_count": events.count(),
-            "active_events": active_events.count(),
             "calendar_data": calendar_data,
+            "range": calendar_range,
         }
         return render(request, self.template_name, context=context)
+
+
+def day_view(request):
+    events = Event.objects.filter(start_time__date=timezone.now().date())
+    print(events)
+    return render(request, "calendly/day_view.html", {"events": events})
+
+
+def week_view(request):
+    events = Event.objects.filter(start_time__date=timezone.now().date())
+    print(events)
+    return render(request, "calendly/week_view.html", {"events": events})
+
+
+def month_view(request):
+    events = Event.objects.filter(start_time__month=timezone.now().month)
+    print(events)
+    return render(request, "calendly/month_view.html", {"events": events})
+
+
+def year_view(request):
+    events = Event.objects.filter(start_time__year=timezone.now().year)
+    print(events)
+    return render(request, "calendly/year_view.html", {"events": events})
 
 
 class EventDetailsView(generic.DetailView):
@@ -53,20 +91,52 @@ class EventDetailsView(generic.DetailView):
 
     def get_object(self, queryset=None):
         url = self.kwargs["hash_url"]
-        try:
-            e_obj = Event.objects.get(hash_url=url)
-        except Event.DoesNotExist:
-            logger.info("Event does not exist with url: %s", url)
-            e_obj = None
-        except Exception as e:
-            logger.warning(e)
-            raise Exception
+        e_obj = get_object_or_404(Event, hash_url=url)
         return e_obj
 
 
-class UserDetailsView(generic.DetailView):
+class UpdateEventView(LoginRequiredMixin, generic.UpdateView):
+    model = Event
+    form_class = EventUpdatingForm
+    template_name = "calendly/update_event_form.html"
+
+    def get_object(self, queryset=None):
+        url = self.kwargs["hash_url"]
+        e_obj = get_object_or_404(Event, hash_url=url)
+        return e_obj
+
+    def dispatch(self, request, *args, **kwargs):
+        event_object = self.get_object()  # Retrieve the object being updated
+
+        # Check if the user is the specific user or an admin
+        if not (request.user == event_object.user_created or request.user.is_staff):
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DeleteEventView(LoginRequiredMixin, generic.DeleteView):
+    model = Event
+    success_url = "/"
+
+    def get_object(self, queryset=None):
+        url = self.kwargs["hash_url"]
+        e_obj = get_object_or_404(Event, hash_url=url)
+        return e_obj
+
+    def dispatch(self, request, *args, **kwargs):
+        event_object = self.get_object()  # Retrieve the object being updated
+
+        # Check if the user is the specific user or an admin
+        if not (request.user == event_object.user_created or request.user.is_staff):
+            return self.handle_no_permission()
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class UserEventsView(generic.DetailView):
     model = User
-    template_name = "calendly/user_details.html"
+    template_name = "calendly/user_events.html"
     context_object_name = "user"
 
     def get_object(self, queryset=None):
@@ -123,7 +193,6 @@ def logout_request(request):
     return redirect("calendly:index")
 
 
-# TODO: rewrite to generic editing view
 def create_event(request):
     if not request.user.is_authenticated:
         return redirect("calendly:register")
