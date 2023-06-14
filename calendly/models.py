@@ -11,12 +11,14 @@ class Event(models.Model):
     end_time = models.DateTimeField("End time", blank=False)
     expired = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    max_amount_of_joiners = models.PositiveSmallIntegerField(default=1)
     hash_url = models.URLField(default=None, editable=False, unique=True)
 
     def __str__(self):
         return f"{self.name} {self.user_created}"
 
     def get_hashed_url(self):
+        # Change if better solution then event name and user created name combo
         identifier = str(self.name) + str(self.user_created)
         hash_obj = hashlib.md5(identifier.encode())
         return hash_obj.hexdigest()
@@ -30,3 +32,12 @@ class Event(models.Model):
         if not self.pk:
             self.hash_url = self.get_hashed_url()
         super().save(*args, **kwargs)
+
+
+class EventJoinUser(models.Model):
+    full_name = models.CharField(max_length=100, blank=False)
+    email = models.EmailField(blank=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.full_name} {self.email}"
