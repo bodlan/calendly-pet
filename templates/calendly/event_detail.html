@@ -40,6 +40,14 @@
             </div>
         </div>
     </div>
+    <ul>
+        <p>Invitees:</p>
+      {% for event_join_user in event_join_users %}
+        <li>{{ event_join_user.full_name }} - {{ event_join_user.email }}</li>
+      {% empty %}
+        <li>No invitees for this event.</li>
+      {% endfor %}
+    </ul>
   {% endif %}
 </div>
 
