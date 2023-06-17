@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.test import TestCase
 from datetime import timedelta
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from .models import Event
@@ -10,14 +11,31 @@ from .models import Event
 class UserModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create(username="testuser", password="testpassword")
+        self.users = get_user_model().objects.all()
 
     def test_user_creation(self):
         self.assertTrue(self.user.username == "testuser")
+        self.assertIsNotNone(self.users.filter(username=self.user.username))
 
     def test_user_password_change(self):
         self.user.password = "newpassword"
         self.user.save()
         self.assertTrue("newpassword", self.user.password)
+
+    def test_user_deletion(self):
+        self.user.delete()
+        self.assertQuerySetEqual(self.users.filter(username=self.user.username), [])
+
+    def test_user_events(self):
+        test_event = Event.objects.create(
+            user_created=self.user,
+            name="test Event",
+            start_time=timezone.now(),
+            end_time=timezone.now() + timedelta(hours=12),
+        )
+        self.assertEqual(test_event.user_created, self.user)
+        self.user.delete()
+        self.assertQuerySetEqual(Event.objects.filter(user_created=self.user), [])
 
 
 class EventModelTest(TestCase):

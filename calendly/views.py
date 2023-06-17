@@ -94,6 +94,13 @@ class EventDetailsView(generic.DetailView):
         e_obj = get_object_or_404(Event, hash_url=url)
         return e_obj
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event = self.get_object()
+        event_join_users = event.eventjoinuser_set.all()
+        context["event_join_users"] = event_join_users
+        return context
+
 
 class UpdateEventView(LoginRequiredMixin, generic.UpdateView):
     model = Event
