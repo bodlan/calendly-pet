@@ -9,10 +9,16 @@ from .models import Event
 
 class EventCreationForm(forms.ModelForm):
     name = forms.CharField(label="Event title", max_length=150, required=True)
+    max_amount_of_joiners = forms.IntegerField(
+        min_value=1,
+        max_value=32767,
+        label="Maximum amount of invitees",
+        initial=1,
+    )
 
     class Meta:
         model = Event
-        fields = ["name", "start_time", "end_time", "hidden"]
+        fields = ["name", "start_time", "end_time", "max_amount_of_joiners", "hidden"]
         widgets = {
             "start_time": DateTimePickerInput(
                 options={
@@ -56,10 +62,11 @@ class EventCreationForm(forms.ModelForm):
 
 class EventUpdatingForm(forms.ModelForm):
     name = forms.CharField(label="Event title", max_length=150, required=True)
+    max_amount_of_joiners = forms.IntegerField(label="Maximum amount of invitees", initial=1)
 
     class Meta:
         model = Event
-        fields = ["name", "start_time", "end_time", "hidden"]
+        fields = ["name", "start_time", "end_time", "max_amount_of_joiners", "hidden"]
         widgets = {
             "start_time": DateTimePickerInput(
                 options={
