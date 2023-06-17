@@ -1,5 +1,6 @@
 import hashlib
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 
@@ -41,3 +42,13 @@ class EventJoinUser(models.Model):
 
     def __str__(self):
         return f"{self.full_name} {self.email}"
+
+    def clean(self):
+        super().clean()
+        existing_joiners = self.event.eventjoinuser_set.count()
+        if existing_joiners >= self.event.max_amount_of_joiners:
+            if self.pk:  # If the instance is being updated
+                # Exclude the current instance from the count
+                existing_joiners -= 1
+            if existing_joiners >= self.event.max_amount_of_joiners:
+                raise ValidationError("Maximum number of joiners exceeded for this event.")
